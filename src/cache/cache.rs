@@ -616,10 +616,12 @@ pub fn storage_from_config(
                 connection_string,
                 container,
                 key_prefix,
+                no_credentials,
             }) => {
                 debug!("Init azure cache with container {container}, key_prefix {key_prefix}");
-                let operator = AzureBlobCache::build(connection_string, container, key_prefix)
-                    .map_err(|err| anyhow!("create azure cache failed: {err:?}"))?;
+                let operator =
+                    AzureBlobCache::build(connection_string, container, key_prefix, *no_credentials)
+                        .map_err(|err| anyhow!("create azure cache failed: {err:?}"))?;
                 let storage = RemoteStorage::new(operator, config.basedirs.clone());
                 return Ok(Arc::new(storage));
             }

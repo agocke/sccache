@@ -186,7 +186,9 @@ impl HTTPUrl {
 pub struct AzureCacheConfig {
     pub connection_string: String,
     pub container: String,
+    #[serde(default)]
     pub key_prefix: String,
+    pub no_credentials: bool,
 }
 
 #[derive(Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -860,10 +862,12 @@ fn config_from_env() -> Result<EnvConfig> {
         env::var("SCCACHE_AZURE_BLOB_CONTAINER"),
     ) {
         let key_prefix = key_prefix_from_env_var("SCCACHE_AZURE_KEY_PREFIX");
+        let no_credentials = bool_from_env_var("SCCACHE_AZURE_NO_CREDENTIALS")?.unwrap_or(false);
         Some(AzureCacheConfig {
             connection_string,
             container,
             key_prefix,
+            no_credentials,
         })
     } else {
         None
@@ -1379,6 +1383,7 @@ fn config_overrides() {
                 connection_string: String::new(),
                 container: String::new(),
                 key_prefix: String::new(),
+                no_credentials: false,
             }),
             disk: Some(DiskCacheConfig {
                 dir: "/env-cache".into(),

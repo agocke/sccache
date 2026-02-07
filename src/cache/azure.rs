@@ -25,7 +25,17 @@ use super::http_client::set_user_agent;
 pub struct AzureBlobCache;
 
 impl AzureBlobCache {
-    pub fn build(connection_string: &str, container: &str, key_prefix: &str) -> Result<Operator> {
+    pub fn build(
+        connection_string: &str,
+        container: &str,
+        key_prefix: &str,
+        _no_credentials: bool,
+    ) -> Result<Operator> {
+        // The connection string configures the endpoint and, optionally,
+        // credentials. When used with no_credentials, the connection
+        // string should contain only the endpoint (e.g.
+        // "BlobEndpoint=https://account.blob.core.windows.net") so that
+        // OpenDAL sends requests without signing (anonymous access).
         let builder = Azblob::from_connection_string(connection_string)?
             .container(container)
             .root(key_prefix);
